@@ -1,4 +1,4 @@
-Parse_Codebird
+Parse CloudCodebird
 ==============
 
 Codebird module for Parse CloudCode
