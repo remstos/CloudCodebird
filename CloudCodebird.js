@@ -1,5 +1,14 @@
 /**
- * A Twitter library in JavaScript
+ * CloudCodebird.js Cloud Code module port
+ * 
+ * @package     CloudCodebird
+ * @author      Remi Santos
+ * @copyright   2014 Remi Santos
+ * 
+ */
+
+/**
+ * Codebird.js A Twitter library in JavaScript
  *
  * @package codebird
  * @version 2.5.0-alpha.2-dev
