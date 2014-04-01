@@ -329,7 +329,6 @@ var Codebird = function () {
      */
 
     var __call = function (fn, params, callback, app_only_auth) {
-console.log('__call function');
         if (typeof params === "undefined") {
             params = {};
         }
@@ -1265,136 +1264,7 @@ console.log('__call function');
      * @return mixed The API reply, encoded in the set return_format
      */
 
-   /* var _callApi = function (httpmethod, method, method_template, params, multipart, app_only_auth, internal, callback) {
-        if (typeof params === "undefined") {
-            params = {};
-        }
-        if (typeof multipart === "undefined") {
-            multipart = false;
-        }
-        if (typeof app_only_auth === "undefined") {
-            app_only_auth = false;
-        }
-        if (typeof callback !== "function") {
-            callback = function () {};
-        }
-        if (internal) {
-            params.adc = "phone";
-            params.application_id = 333903271;
-        }
 
-        var url = _getEndpoint(method);
-        var authorization = null;
-
-        var xml = _getXmlRequestObject();
-        if (xml === null) {
-            return;
-        }
-        var post_fields;
-
-        if (httpmethod === "GET") {
-            var url_with_params = url;
-            if (JSON.stringify(params) !== "{}") {
-                url_with_params += "?" + _http_build_query(params);
-            }
-            authorization = _sign(httpmethod, url, params);
-
-            // append auth params to GET url for IE7-9, to send via JSONP
-            if (_use_jsonp) {
-                if (JSON.stringify(params) !== "{}") {
-                    url_with_params += "&";
-                } else {
-                    url_with_params += "?";
-                }
-                var callback_name = _nonce();
-                window[callback_name] = function (reply) {
-                    reply.httpstatus = 200;
-
-                    var rate = {
-                        limit: xml.getResponseHeader("x-rate-limit-limit"),
-                        remaining: xml.getResponseHeader("x-rate-limit-remaining"),
-                        reset: xml.getResponseHeader("x-rate-limit-reset")
-                    };
-                    callback(reply, rate);
-                };
-                params.callback = callback_name;
-                url_with_params = url + "?" + _sign(httpmethod, url, params, true);
-                var tag = document.createElement("script");
-                tag.type = "text/javascript";
-                tag.src = url_with_params;
-                var body = document.getElementsByTagName("body")[0];
-                body.appendChild(tag);
-                return;
-
-            } else if (_use_proxy) {
-                url_with_params = url_with_params.replace(
-                    _endpoint_base,
-                    _endpoint_proxy
-                );
-            }
-            xml.open(httpmethod, url_with_params, true);
-        } else {
-            if (_use_jsonp) {
-                console.warn("Sending POST requests is not supported for IE7-9.");
-                return;
-            }
-            if (multipart) {
-                authorization = _sign(httpmethod, url, {});
-                params        = _buildMultipart(method, params);
-            } else {
-                authorization = _sign(httpmethod, url, params);
-                params        = _http_build_query(params);
-            }
-            post_fields = params;
-            if (_use_proxy || multipart) { // force proxy for multipart base64
-                url = url.replace(
-                    _endpoint_base,
-                    _endpoint_proxy
-                );
-            }
-            xml.open(httpmethod, url, true);
-            if (multipart) {
-                xml.setRequestHeader("Content-Type", "multipart/form-data; boundary="
-                    + post_fields.split("\r\n")[0].substring(2));
-            } else {
-                xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            }
-        }
-        if (app_only_auth) {
-            if (_oauth_consumer_key === null) {
-                console.warn("To make an app-only auth API request, the consumer key must be set.");
-            }
-            // automatically fetch bearer token, if necessary
-            if (_oauth_bearer_token === null) {
-                return oauth2_token(function () {
-                    _callApi(httpmethod, method, method_template, params, multipart, app_only_auth, false, callback);
-                });
-            }
-            authorization = "Bearer " + _oauth_bearer_token;
-        }
-        if (authorization !== null) {
-            xml.setRequestHeader((_use_proxy ? "X-" : "") + "Authorization", authorization);
-        }
-        xml.onreadystatechange = function () {
-            if (xml.readyState >= 4) {
-                var httpstatus = 12027;
-                try {
-                    httpstatus = xml.status;
-                } catch (e) {}
-                var reply = _parseApiReply(method_template, xml.responseText);
-                reply.httpstatus = httpstatus;
-                var rate = {
-                    limit: xml.getResponseHeader("x-rate-limit-limit"),
-                    remaining: xml.getResponseHeader("x-rate-limit-remaining"),
-                    reset: xml.getResponseHeader("x-rate-limit-reset")
-                };
-                callback(reply, rate);
-            }
-        };
-        xml.send(httpmethod === "GET" ? null : post_fields);
-        return true;
-    };
-*/
 	var _callApi = function (httpmethod, method, method_template, params, multipart, app_only_auth, internal, callback) {
         if (typeof params === "undefined") {
             params = {};
@@ -1420,7 +1290,6 @@ console.log('__call function');
             if (JSON.stringify(params) !== "{}") {
                 url_with_params += "?" + _http_build_query(params);
             }
-            console.log('urlParams : '+url_with_params);
 			var authorization = _sign(httpmethod, url, params);
             Parse.Cloud.httpRequest({
                     method: httpmethod,
@@ -1432,7 +1301,6 @@ console.log('__call function');
                     },
                     body: post_fields,
                     success: function(httpResponse) {
-                    	console.log('GET Request success');
                         callback(httpResponse);
                     },
                     error: function(httpResponse) {
@@ -1442,7 +1310,6 @@ console.log('__call function');
                 });
             
         } else {
-            console.log('POST request detected');
             if(multipart) {
                 
                 var authorization = _sign('POST', url, {}, true);
@@ -1458,10 +1325,11 @@ console.log('__call function');
                     },
                     body: post_fields,
                     success: function(httpResponse) {
-                        console.log(httpResponse.text);
+                        callback(httpResponse);
                     },
                     error: function(httpResponse) {
                         console.error('POST Request failed with response code ' + httpResponse.status);
+                        callback(httpResponse);
                     }
                 });
                 
@@ -1477,10 +1345,11 @@ console.log('__call function');
                     },
                     body: post_fields,
                     success: function(httpResponse) {
-                        console.log(httpResponse.text);
+                        callback(httpResponse);
                     },
                     error: function(httpResponse) {
                         console.error('Request failed with response code ' + httpResponse.status);
+                        callback(httpResponse);
                     }
                 });                
             
